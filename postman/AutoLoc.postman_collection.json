@@ -1,0 +1,515 @@
+{
+  "info": {
+    "name": "AutoLoc",
+    "description": "Atelier 5 — API REST AutoLoc (Agences, Clients, Employes, Vehicules, Equipements, Reservations, Contrats, Paiements, Maintenances). Préfixe d'URL : server.servlet.context-path=/api. Port : 8082 (voir application.properties).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Agences",
+      "item": [
+        {
+          "name": "Lister les agences",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/agences", "host": ["{{baseUrl}}"], "path": ["api", "agences"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));"
+          ] } }]
+        },
+        {
+          "name": "Consulter une agence inexistante",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/agences/9999", "host": ["{{baseUrl}}"], "path": ["api", "agences", "9999"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 404\", () => pm.response.to.have.status(404));"
+          ] } }]
+        },
+        {
+          "name": "Créer une agence",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"nom\": \"Agence Tunis Centre\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"12 Avenue Habib Bourguiba\",\n  \"telephone\": \"71123456\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/agences", "host": ["{{baseUrl}}"], "path": ["api", "agences"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 201\", () => pm.response.to.have.status(201));",
+            "pm.environment.set(\"agenceId\", pm.response.json().idAgence);"
+          ] } }]
+        },
+        {
+          "name": "Créer une agence invalide (nom vide)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"nom\": \"\",\n  \"ville\": \"Tunis\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/agences", "host": ["{{baseUrl}}"], "path": ["api", "agences"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 400\", () => pm.response.to.have.status(400));"
+          ] } }]
+        },
+        {
+          "name": "Modifier une agence",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"nom\": \"Agence Tunis Centre\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"20 Avenue Mohamed V\",\n  \"telephone\": \"71123456\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/agences/{{agenceId}}", "host": ["{{baseUrl}}"], "path": ["api", "agences", "{{agenceId}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));",
+            "pm.test(\"Adresse mise à jour\", () => pm.expect(pm.response.json().adresse).to.eql(\"20 Avenue Mohamed V\"));"
+          ] } }]
+        },
+        {
+          "name": "Modifier une agence inexistante",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"nom\": \"Agence Fantome\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/agences/9999", "host": ["{{baseUrl}}"], "path": ["api", "agences", "9999"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 404\", () => pm.response.to.have.status(404));"
+          ] } }]
+        }
+      ]
+    },
+    {
+      "name": "Clients",
+      "item": [
+        {
+          "name": "Lister les clients",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/clients", "host": ["{{baseUrl}}"], "path": ["api", "clients"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));" ] } }]
+        },
+        {
+          "name": "Consulter un client inexistant",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/clients/9999", "host": ["{{baseUrl}}"], "path": ["api", "clients", "9999"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 404\", () => pm.response.to.have.status(404));" ] } }]
+        },
+        {
+          "name": "Créer un client",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"nom\": \"Ben Ali\",\n  \"prenom\": \"Sami\",\n  \"email\": \"sami.benali@example.com\",\n  \"telephone\": \"20123456\",\n  \"numPermis\": \"TN-998877\",\n  \"dateInscription\": \"2026-01-10\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/clients", "host": ["{{baseUrl}}"], "path": ["api", "clients"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 201\", () => pm.response.to.have.status(201));",
+            "pm.environment.set(\"clientId\", pm.response.json().idClient);"
+          ] } }]
+        },
+        {
+          "name": "Créer un client invalide (email vide)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"nom\": \"Sans Email\",\n  \"email\": \"\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/clients", "host": ["{{baseUrl}}"], "path": ["api", "clients"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 400\", () => pm.response.to.have.status(400));" ] } }]
+        },
+        {
+          "name": "Modifier un client",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"nom\": \"Ben Ali\",\n  \"prenom\": \"Sami\",\n  \"email\": \"sami.benali@example.com\",\n  \"telephone\": \"25123456\",\n  \"numPermis\": \"TN-998877\",\n  \"dateInscription\": \"2026-01-10\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/clients/{{clientId}}", "host": ["{{baseUrl}}"], "path": ["api", "clients", "{{clientId}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));",
+            "pm.test(\"Téléphone mis à jour\", () => pm.expect(pm.response.json().telephone).to.eql(\"25123456\"));"
+          ] } }]
+        }
+      ]
+    },
+    {
+      "name": "Vehicules",
+      "item": [
+        {
+          "name": "Lister les véhicules",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/vehicules", "host": ["{{baseUrl}}"], "path": ["api", "vehicules"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));" ] } }]
+        },
+        {
+          "name": "Consulter un véhicule inexistant",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/vehicules/9999", "host": ["{{baseUrl}}"], "path": ["api", "vehicules", "9999"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 404\", () => pm.response.to.have.status(404));" ] } }]
+        },
+        {
+          "name": "Créer un véhicule",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"immatriculation\": \"123TUN4567\",\n  \"marque\": \"Renault\",\n  \"modele\": \"Clio\",\n  \"categorie\": \"ECONOMIQUE\",\n  \"tarifJournalier\": 85.00,\n  \"statut\": \"DISPONIBLE\",\n  \"agence\": { \"idAgence\": {{agenceId}} }\n}" },
+            "url": { "raw": "{{baseUrl}}/api/vehicules", "host": ["{{baseUrl}}"], "path": ["api", "vehicules"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 201\", () => pm.response.to.have.status(201));",
+            "pm.environment.set(\"vehiculeId\", pm.response.json().idVehicule);"
+          ] } }]
+        },
+        {
+          "name": "Créer un véhicule invalide (tarif négatif)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"immatriculation\": \"999TUN0001\",\n  \"tarifJournalier\": -50.00\n}" },
+            "url": { "raw": "{{baseUrl}}/api/vehicules", "host": ["{{baseUrl}}"], "path": ["api", "vehicules"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 400\", () => pm.response.to.have.status(400));" ] } }]
+        },
+        {
+          "name": "Modifier un véhicule",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"immatriculation\": \"123TUN4567\",\n  \"marque\": \"Renault\",\n  \"modele\": \"Clio\",\n  \"categorie\": \"ECONOMIQUE\",\n  \"tarifJournalier\": 95.00,\n  \"statut\": \"DISPONIBLE\",\n  \"agence\": { \"idAgence\": {{agenceId}} }\n}" },
+            "url": { "raw": "{{baseUrl}}/api/vehicules/{{vehiculeId}}", "host": ["{{baseUrl}}"], "path": ["api", "vehicules", "{{vehiculeId}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));",
+            "pm.test(\"Tarif mis à jour\", () => pm.expect(pm.response.json().tarifJournalier).to.eql(95.0));"
+          ] } }]
+        }
+      ]
+    },
+    {
+      "name": "Employes",
+      "item": [
+        {
+          "name": "Lister les employés",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/employes", "host": ["{{baseUrl}}"], "path": ["api", "employes"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));" ] } }]
+        },
+        {
+          "name": "Consulter un employé inexistant",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/employes/9999", "host": ["{{baseUrl}}"], "path": ["api", "employes", "9999"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 404\", () => pm.response.to.have.status(404));" ] } }]
+        },
+        {
+          "name": "Créer un employé",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"nom\": \"Trabelsi\",\n  \"prenom\": \"Karim\",\n  \"role\": \"AGENT\",\n  \"agence\": { \"idAgence\": {{agenceId}} }\n}" },
+            "url": { "raw": "{{baseUrl}}/api/employes", "host": ["{{baseUrl}}"], "path": ["api", "employes"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 201\", () => pm.response.to.have.status(201));",
+            "pm.environment.set(\"employeId\", pm.response.json().idEmploye);"
+          ] } }]
+        },
+        {
+          "name": "Créer un employé invalide (nom vide)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"nom\": \"\",\n  \"prenom\": \"Karim\",\n  \"role\": \"AGENT\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/employes", "host": ["{{baseUrl}}"], "path": ["api", "employes"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 400\", () => pm.response.to.have.status(400));" ] } }]
+        },
+        {
+          "name": "Modifier un employé",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"nom\": \"Trabelsi\",\n  \"prenom\": \"Karim\",\n  \"role\": \"MANAGER\",\n  \"agence\": { \"idAgence\": {{agenceId}} }\n}" },
+            "url": { "raw": "{{baseUrl}}/api/employes/{{employeId}}", "host": ["{{baseUrl}}"], "path": ["api", "employes", "{{employeId}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));",
+            "pm.test(\"Rôle mis à jour\", () => pm.expect(pm.response.json().role).to.eql(\"MANAGER\"));"
+          ] } }]
+        }
+      ]
+    },
+    {
+      "name": "Equipements",
+      "item": [
+        {
+          "name": "Lister les équipements",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/equipements", "host": ["{{baseUrl}}"], "path": ["api", "equipements"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));" ] } }]
+        },
+        {
+          "name": "Consulter un équipement inexistant",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/equipements/9999", "host": ["{{baseUrl}}"], "path": ["api", "equipements", "9999"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 404\", () => pm.response.to.have.status(404));" ] } }]
+        },
+        {
+          "name": "Créer un équipement",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"libelle\": \"GPS\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/equipements", "host": ["{{baseUrl}}"], "path": ["api", "equipements"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 201\", () => pm.response.to.have.status(201));",
+            "pm.environment.set(\"equipementId\", pm.response.json().idEquipement);"
+          ] } }]
+        },
+        {
+          "name": "Créer un équipement invalide (libellé vide)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"libelle\": \"\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/equipements", "host": ["{{baseUrl}}"], "path": ["api", "equipements"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 400\", () => pm.response.to.have.status(400));" ] } }]
+        }
+      ]
+    },
+    {
+      "name": "Reservations",
+      "item": [
+        {
+          "name": "Lister les réservations",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/reservations", "host": ["{{baseUrl}}"], "path": ["api", "reservations"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));" ] } }]
+        },
+        {
+          "name": "Consulter une réservation inexistante",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/reservations/9999", "host": ["{{baseUrl}}"], "path": ["api", "reservations", "9999"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 404\", () => pm.response.to.have.status(404));" ] } }]
+        },
+        {
+          "name": "Créer une réservation",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"dateDebut\": \"2026-11-10\",\n  \"dateFin\": \"2026-11-15\",\n  \"statut\": \"EN_ATTENTE\",\n  \"client\": { \"idClient\": {{clientId}} },\n  \"vehicule\": { \"idVehicule\": {{vehiculeId}} }\n}" },
+            "url": { "raw": "{{baseUrl}}/api/reservations", "host": ["{{baseUrl}}"], "path": ["api", "reservations"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 201\", () => pm.response.to.have.status(201));",
+            "pm.environment.set(\"reservationId\", pm.response.json().idReservation);"
+          ] } }]
+        },
+        {
+          "name": "Créer une réservation invalide (date fin < date début)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"dateDebut\": \"2026-11-15\",\n  \"dateFin\": \"2026-11-10\",\n  \"statut\": \"EN_ATTENTE\",\n  \"client\": { \"idClient\": {{clientId}} },\n  \"vehicule\": { \"idVehicule\": {{vehiculeId}} }\n}" },
+            "url": { "raw": "{{baseUrl}}/api/reservations", "host": ["{{baseUrl}}"], "path": ["api", "reservations"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 400\", () => pm.response.to.have.status(400));" ] } }]
+        },
+        {
+          "name": "Modifier une réservation",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"dateDebut\": \"2026-11-10\",\n  \"dateFin\": \"2026-11-16\",\n  \"statut\": \"CONFIRMEE\",\n  \"client\": { \"idClient\": {{clientId}} },\n  \"vehicule\": { \"idVehicule\": {{vehiculeId}} }\n}" },
+            "url": { "raw": "{{baseUrl}}/api/reservations/{{reservationId}}", "host": ["{{baseUrl}}"], "path": ["api", "reservations", "{{reservationId}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));",
+            "pm.test(\"Statut réservation mis à jour\", () => pm.expect(pm.response.json().statut).to.eql(\"CONFIRMEE\"));"
+          ] } }]
+        }
+      ]
+    },
+    {
+      "name": "Contrats",
+      "item": [
+        {
+          "name": "Lister les contrats",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/contrats", "host": ["{{baseUrl}}"], "path": ["api", "contrats"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));" ] } }]
+        },
+        {
+          "name": "Consulter un contrat inexistant",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/contrats/9999", "host": ["{{baseUrl}}"], "path": ["api", "contrats", "9999"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 404\", () => pm.response.to.have.status(404));" ] } }]
+        },
+        {
+          "name": "Créer un contrat",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"dateSignature\": \"2026-11-02\",\n  \"montantTotal\": 480.00,\n  \"valide\": true\n}" },
+            "url": { "raw": "{{baseUrl}}/api/contrats", "host": ["{{baseUrl}}"], "path": ["api", "contrats"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 201\", () => pm.response.to.have.status(201));",
+            "pm.environment.set(\"contratId\", pm.response.json().idContrat);"
+          ] } }]
+        },
+        {
+          "name": "Créer un contrat avec un identifiant (refusé)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"idContrat\": 5,\n  \"dateSignature\": \"2026-11-02\",\n  \"montantTotal\": 480.00,\n  \"valide\": true\n}" },
+            "url": { "raw": "{{baseUrl}}/api/contrats", "host": ["{{baseUrl}}"], "path": ["api", "contrats"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 400\", () => pm.response.to.have.status(400));" ] } }]
+        },
+        {
+          "name": "Créer un contrat invalide (montant négatif)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"dateSignature\": \"2026-11-02\",\n  \"montantTotal\": -10.00,\n  \"valide\": false\n}" },
+            "url": { "raw": "{{baseUrl}}/api/contrats", "host": ["{{baseUrl}}"], "path": ["api", "contrats"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 400\", () => pm.response.to.have.status(400));" ] } }]
+        },
+        {
+          "name": "Créer un contrat avec ses paiements (cascade)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"dateSignature\": \"2026-11-02\",\n  \"montantTotal\": 480.00,\n  \"valide\": true,\n  \"paiements\": [\n    { \"montant\": 150.00, \"datePaiement\": \"2026-11-02\", \"modePaiement\": \"CARTE\" },\n    { \"montant\": 330.00, \"datePaiement\": \"2026-11-06\", \"modePaiement\": \"VIREMENT\" }\n  ]\n}" },
+            "url": { "raw": "{{baseUrl}}/api/contrats", "host": ["{{baseUrl}}"], "path": ["api", "contrats"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 201\", () => pm.response.to.have.status(201));",
+            "pm.test(\"Deux paiements créés par cascade\", () => pm.expect(pm.response.json().paiements.length).to.eql(2));"
+          ] } }]
+        },
+        {
+          "name": "Modifier un contrat",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"dateSignature\": \"2026-11-02\",\n  \"montantTotal\": 520.00,\n  \"valide\": true\n}" },
+            "url": { "raw": "{{baseUrl}}/api/contrats/{{contratId}}", "host": ["{{baseUrl}}"], "path": ["api", "contrats", "{{contratId}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));",
+            "pm.test(\"Montant mis à jour\", () => pm.expect(pm.response.json().montantTotal).to.eql(520.0));"
+          ] } }]
+        },
+        {
+          "name": "Modifier un contrat inexistant",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"montantTotal\": 100.00\n}" },
+            "url": { "raw": "{{baseUrl}}/api/contrats/9999", "host": ["{{baseUrl}}"], "path": ["api", "contrats", "9999"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 404\", () => pm.response.to.have.status(404));" ] } }]
+        },
+        {
+          "name": "Supprimer un contrat",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contrats/{{contratId}}", "host": ["{{baseUrl}}"], "path": ["api", "contrats", "{{contratId}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 204\", () => pm.response.to.have.status(204));" ] } }]
+        },
+        {
+          "name": "Supprimer un contrat inexistant",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contrats/9999", "host": ["{{baseUrl}}"], "path": ["api", "contrats", "9999"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 404\", () => pm.response.to.have.status(404));" ] } }]
+        }
+      ]
+    },
+    {
+      "name": "Paiements",
+      "item": [
+        {
+          "name": "Lister les paiements",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/paiements", "host": ["{{baseUrl}}"], "path": ["api", "paiements"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));",
+            "const body = pm.response.json();",
+            "if (Array.isArray(body) && body.length > 0) { pm.environment.set(\"paiementId\", body[0].idPaiement); }"
+          ] } }]
+        },
+        {
+          "name": "Consulter un paiement inexistant",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/paiements/9999", "host": ["{{baseUrl}}"], "path": ["api", "paiements", "9999"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 404\", () => pm.response.to.have.status(404));" ] } }]
+        },
+        {
+          "name": "Consulter un paiement du contrat supprimé (cascade REMOVE)",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/paiements/{{paiementId}}", "host": ["{{baseUrl}}"], "path": ["api", "paiements", "{{paiementId}}"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 404 (paiement supprimé avec son contrat)\", () => pm.response.to.have.status(404));"
+          ] } }]
+        },
+        {
+          "name": "Créer un paiement (refusé)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"montant\": 50.00,\n  \"datePaiement\": \"2026-11-02\",\n  \"modePaiement\": \"ESPECES\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/paiements", "host": ["{{baseUrl}}"], "path": ["api", "paiements"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 405 (lecture seule, passe par le Contrat)\", () => pm.response.to.have.status(405));"
+          ] } }]
+        }
+      ]
+    },
+    {
+      "name": "Maintenances",
+      "item": [
+        {
+          "name": "Lister les maintenances",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/maintenances", "host": ["{{baseUrl}}"], "path": ["api", "maintenances"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 200\", () => pm.response.to.have.status(200));" ] } }]
+        },
+        {
+          "name": "Consulter une maintenance inexistante",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/maintenances/9999", "host": ["{{baseUrl}}"], "path": ["api", "maintenances", "9999"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 404\", () => pm.response.to.have.status(404));" ] } }]
+        },
+        {
+          "name": "Créer une maintenance",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"dateDebut\": \"2026-11-05\",\n  \"dateFin\": \"2026-11-07\",\n  \"description\": \"Vidange et révision\",\n  \"vehicule\": { \"idVehicule\": {{vehiculeId}} }\n}" },
+            "url": { "raw": "{{baseUrl}}/api/maintenances", "host": ["{{baseUrl}}"], "path": ["api", "maintenances"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Statut 201\", () => pm.response.to.have.status(201));",
+            "pm.environment.set(\"maintenanceId\", pm.response.json().idMaintenance);"
+          ] } }]
+        },
+        {
+          "name": "Créer une maintenance invalide (date fin < date début)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "options": { "raw": { "language": "json" } }, "raw": "{\n  \"dateDebut\": \"2026-11-10\",\n  \"dateFin\": \"2026-11-05\",\n  \"description\": \"Test\",\n  \"vehicule\": { \"idVehicule\": {{vehiculeId}} }\n}" },
+            "url": { "raw": "{{baseUrl}}/api/maintenances", "host": ["{{baseUrl}}"], "path": ["api", "maintenances"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 400\", () => pm.response.to.have.status(400));" ] } }]
+        },
+        {
+          "name": "Supprimer une maintenance",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/maintenances/{{maintenanceId}}", "host": ["{{baseUrl}}"], "path": ["api", "maintenances", "{{maintenanceId}}"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test(\"Statut 204\", () => pm.response.to.have.status(204));" ] } }]
+        }
+      ]
+    }
+  ]
+}
